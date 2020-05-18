@@ -1,0 +1,163 @@
+
+<!-- saved from url=(0040)http://rachna.quickwashapp.in/decryption -->
+<html <!doctype="" html="" class="no-js">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">        
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Set Project</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://rachna.quickwashapp.in/decryption">
+        <!--<script src="./decryption_files/jquery-3.4.1.min.js.download" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>-->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <!-- Watermark.js-->
+        <script src="./decryption_files/watermark.js.download"></script>
+        <!-- Steganography.js-->
+        <script src="./decryption_files/steganography.js.download"></script>
+    </head>
+    <body>
+        <div style="background: #333; color: white; padding: 10px 20px; text-align: center; font-size: 18px;">
+            Set Conference Project - By : Rachna
+        </div><br>
+        <div>
+            <a href="javascript:showProcedure()" style="cursor: pointer;"><img src="./decryption_files/clickhere.gif" height="60" style="vertical-align: middle;">How to Decrypt the Message from Encrypted Image</a>
+            <div id="procedure-here" style="display: none;" show="0">
+                <h3>Step 1:- First Upload the Encrypted Image. <span id="firstsuccess" style="display: none;"><img src="./decryption_files/tick-green-512.png" style="width: 20; position: relative; top:3px; margin-left: 10px;"></span></h3>
+                <h3>Step 2:- After Click on <mark>Decryption Message</mark> and You got Secret Message. <span id="secondsuccess" style="display: none;"><img src="./decryption_files/tick-green-512.png" style="width: 20; position: relative; top:3px; margin-left: 10px;"></span></h3>
+            </div>
+        </div>
+        <fieldset>
+            <legend>Input</legend>
+                <label>Encrypt Image Upload:</label>
+                <input id="imageInput" type="file"><br><br>
+                <button type="button" id="addencryptbtn" onclick="javascript:decryptionImage()" disabled="">Decrypt Message</button>
+                <button type="button" onclick="javascript:reloadPage()">Reset All</button>
+        </fieldset><br>
+
+        <fieldset>
+                <legend>Output Here</legend>
+                <div id="displayencrypteddiv" style=" display: inline-block;margin-left: 10px;">
+                        <h1 id="mainimageh4" style="display: none;">Step - 1: Upload Encrypt Image</h1>
+                        <img id="img" src="http://rachna.quickwashapp.in/decryption"> <!-- Watermark Image Show here afetr upload-->
+                            <div id="messageArea" class="invisible">
+                                <h2>Message:</h2>
+                                <div id="message"></div> <!--Secret Message Show here after Decryption-->
+                            </div>
+                </div>
+        </fieldset><br>
+
+        <div style="background: #333; color: white; padding: 10px 20px; text-align: center; font-size: 18px;" hidden="">
+            By Rachna 
+        </div>
+        
+        <script>
+        // Show Step By Step Procedure Function
+        function showProcedure(){
+            var d=parseInt($("#procedure-here").attr("show"));
+            if(d==0){
+                $("#procedure-here").css("display","block");
+                $("#procedure-here").attr("show",1);
+            }else if(d==1){
+                $("#procedure-here").css("display","none");
+                $("#procedure-here").attr("show",0);
+            }
+        }
+
+        // Image Upload Change call Function for Image Upload
+        $("#imageInput").change(function() {
+
+            readURL(this);
+        });
+        function readURL(input){
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                $('#img').attr('src', e.target.result);
+                let imagefirsturl=e.target.result;
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+                $("#mainimageh4").css("display","block");
+                $("#imageInput").attr("disabled","disabled");
+                $("#addencryptbtn").removeAttr("disabled");
+                $("#firstsuccess").css("display","inline-block");
+                alert("Encrypted Image upload successfully. Now Click on Decrypt Message Button!");   
+
+                handleFileSelect("change");             
+            }
+        }
+
+
+        // Handle Uploaded Image
+        function handleFileSelect(evt) {
+			var original = document.getElementById("original"),
+				stego = document.getElementById("stego"),
+				img = document.getElementById("img"),
+				cover = document.getElementById("cover"),
+				message = document.getElementById("message");
+			if(!original || !stego) return;
+
+			var files = evt.target.files; // FileList object
+
+			// Loop through the FileList and render image files as thumbnails.
+			for (var i = 0, f; f = files[i]; i++) {
+
+				// Only process image files.
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+
+				var reader = new FileReader();
+
+				// Closure to capture the file information.
+				reader.onload = (function(theFile) {
+					return function(e) {
+						img.src = e.target.result;
+						img.title = escape(theFile.name);
+						stego.className = "half invisible";
+						cover.src = "";
+						message.innerHTML="";
+						message.parentNode.className="invisible";
+						updateCapacity();
+					};
+				})(f);
+
+				// Read in the image file as a data URL.
+				reader.readAsDataURL(f);
+			}
+		}
+
+        function updateCapacity() {
+			var img = document.getElementById('img'),
+				textarea = document.getElementById('messagetypehere');
+			if(img && textarea)
+				document.getElementById('capacity').innerHTML='('+textarea.value.length + '/' + steg.getHidingCapacity(img) +' chars)';
+		}
+
+        // Decryption Function
+        function decryptionImage(){
+            console.log("messagetypehere");
+            $("#secondsuccess").css("display","inline-block");
+            alert("Secret Message Decryption completed successfully. Now Check the Secret Message!");
+            $("#addencryptbtn").attr("disabled","disabled");
+
+            var img = document.getElementById("img"),
+				cover = document.getElementById("cover"),
+				message = document.getElementById("message"),
+				textarea = document.getElementById("text");
+                message.innerHTML = steg.decode(img); // Decryption Function call for Decrypt Message from Encrypted Image
+        }
+
+        // Reset All Function
+        function reloadPage(){
+            var r=confirm("Are you sure you want to reset all process! you should lost data!");
+            if (r == true) {
+                window.location.href='';
+            } else {
+                
+            }
+        }
+        </script>
+    
+</body></html>

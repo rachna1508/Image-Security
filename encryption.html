@@ -1,0 +1,197 @@
+<html !DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Image Security</title>        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href=""> 
+        <!-- Jquery Library-->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <!-- Watermark.js Library-->
+        <script src="watermark.js"></script> 
+                <!-- Steganography.js-->
+                <script src="steganography.js"></script>
+    </head>
+
+    <body>
+          <!-- Header-->
+     <div style="background: rgb(22, 16, 107); color:white;padding: 10px 20px;text-align: center; font-size: 19px;">
+        IMAGE SECURITY
+    </div><br>
+    <!-- /Header-->
+
+    <!-- Procedure-->
+    <div>
+        <a href="javascript:showProcedure()" style="cursor: pointer;">
+            <img src="clickhere.gif" height="60" style="vertical-align: middle;">
+            Steps to Encrypt Message in the WaterMarked Image
+        </a>
+        <div id="procedure-here" style="display: none;" show="0">
+            <h3>
+                Step 1:- First Upload the Downloaded <mark>WaterMarked Image.</mark>
+                <span id="firstsuccess" style="display: none;">
+                <img src="tick-green-512.png" style="width: 20; position: relative; top:3px; margin-left: 10px;">
+                </span>   
+            </h3>
+            <h3>
+                Step 2:- Now Type the <mark>Secret Message</mark> and then click on <mark>Encrypt Button</mark>
+                <span id="secondsuccess" style="display: none;">
+                <img src="tick-green-512.png" style="width: 20; position: relative; top:3px; margin-left: 10px;">
+                </span>   
+            </h3>
+            <h3>
+                Step 3:- Now Click on the <mark>Download Encrypted Button </mark>to download it and then click on Decrypt it Button.<span id="thirdsuccess" style="display: none;">
+                <img src="tick-green-512.png" style="width: 20; position: relative; top:3px; margin-left: 10px;">
+                </span>   
+            </h3>
+        </div>
+    </div>
+    <!--/Procedure-->
+
+    <!--Input Data-->
+    <fieldset style="border-color: blue; background-color: #d4ebf2;">
+        <legend style="font-style: normal; font-weight: bolder;">Let's Start!</legend>
+        <label>Upload the WaterMarked Image : </label>
+        <input type="file" id="imageInput"/><br><br>
+
+        <textarea id="messagetypehere" cols="60" rows="10" placeholder="Type yout Secret Message Here!" disabled></textarea><br><br>
+
+        <button type="button" style=background-color:#22bde4 id="addencryptbtn" onclick="javascript:encryptionImage()" disabled>Encrypt!</button><br><br>
+
+        <button type="button" style=background-color:#22bde4 onclick="javascript:reloadPage()">Reset All</button>
+    </fieldset><br><br>
+    <!--/Input Data-->
+
+    <!--Procedure-->
+    <fieldset style="border-color: blue; background-color: #d4ebf2;">
+        <legend style="font-style: normal;font-weight: bolder;">Have a Look on your Work here!</legend>
+        <div id="displayencrypteddiv" style=" display: inline-block;margin-left: 10px;">
+            <h1 id="mainimageh4" style="display: none;">Your Watermarked Image</h1>
+            <img id="img" src="#"/> <!--Watermark Image Uploafded Here-->
+            <div id="stego" class="half">
+                <h2 id="mainimageh1" style="display: none;">Your Encrypted Image</h2>
+                <img id="cover" src=""/>  <!-- After Encryption Image Show Here-->
+                <div id="capacity"></div> <!-- Show Image Capacity Show Here-->
+                <a id="download" style="display: none;" class="btn small" download="cover.png" rel="nofollow"><strong>Download Encrypted Image</strong></a>
+            </div>
+        </div>      
+    </fieldset>
+    <!--/Procedure-->
+
+    <!--Decryption Button-->
+    <button type="button" style=background-color:#22bde4 onclick="window.location.href='decryption.html'" >
+        <b>Decrypt it!</b>
+     </button>
+     <!--/Decryption Button-->
+
+     <!--Script-->
+    <script>
+        //Procedure
+        function showProcedure(){
+          var d=parseInt($("#procedure-here").attr("show"));
+              if(d==0){
+                  $("#procedure-here").css("display","block");
+                  $("#procedure-here").attr("show",1);
+              }
+              else if(d==1){
+                  $("#procedure-here").css("display","none");
+                  $("#procedure-here").attr("show",0);
+              } 
+        }
+  
+        //WaterMark Function
+        $("#imageInput").change(function() {readURL(this);});
+        function readURL(input){
+            if(input.files && input.files[0]) {
+                  var reader = new FileReader();
+  
+                  reader.onload=function(e){
+                      $('#img').attr('src', e.target.result);
+                      var imagefirsturl=e.target.result;  
+                  }
+                  reader.readAsDataURL(input.files[0]);                  
+                  $("#mainimageh4").css("display","block"); // Displays Heading 
+                  $("#imageInput").attr("disabled","disabled"); // Disables Main Image
+                  $("#messagetypehere").removeAttr("disabled"); // Enables TextArea
+                  $("#addencryptbtn").removeAttr("disabled"); // Enables Encryption Button
+                  $("#firstsuccess").css("display","inline-block"); //Tick Mark
+                  alert("Watermarked Image Upload successfully. Now Type the Secret Message!"); // Displays Alert 
+                  handleFileSelect("change");
+              }
+          }
+
+          //Handling Watermarked Image
+          function handleFileSelect(evt){
+              var stego = document.getElementById("stego"),
+				img = document.getElementById("img"),
+				cover = document.getElementById("cover");
+
+                var files = evt.target.files; // FileList object
+
+                // Loop through the FileList and render image files as thumbnails.
+			for (var i = 0, f; f = files[i]; i++) {
+
+				// Only process image files.
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+				var reader = new FileReader(); // Read The File Images
+				// Closure to capture the file information.
+				reader.onload = (function(theFile) {
+					return function(e) {
+						img.src = e.target.result;
+						img.title = escape(theFile.name);
+						stego.className = "half invisible";
+						cover.src = "";
+						updateCapacity();
+					};
+				})(f);
+				// Read in the image file as a data URL.
+				reader.readAsDataURL(f);
+			}
+          }
+          // Update Capacity Function
+        function updateCapacity() {
+			var img = document.getElementById('img'),
+				textarea = document.getElementById('messagetypehere');
+			if(img && textarea)
+				document.getElementById('capacity').innerHTML='('+textarea.value.length + '/' + steg.getHidingCapacity(img) +' chars)';
+		}
+
+        // Encryption Function
+        function encryptionImage(){
+            $("#mainimageh1").css("display","block");  // Heading First Display
+            $("#download").css("display","block"); //Download Button Display
+            $("#fourthsuccess").css("display","inline-block");
+            alert("Secret Message Encryption completed successfully. Now Download the Encrypted Image!");
+            $("#messagetypehere").attr("disabled","disabled");
+            $("#addencryptbtn").attr("disabled","disabled");
+
+            var stego = document.getElementById("stego"),
+				img = document.getElementById("img"), // Watermark Image File Call
+				cover = document.getElementById("cover"),
+				textarea = document.getElementById("messagetypehere"),  // TextArea Mesaage
+				download = document.getElementById("download"); // Download Button
+			if(img && textarea) {
+				cover.src = steg.encode(textarea.value, img);  // Encryption function by Steganography.Js Library
+                console.log(steg.encode(textarea.value, img));
+				stego.className = "half";
+                download.href=cover.src.replace("image/png", "image/octet-stream");
+			}
+        }
+        //Reset
+        function reloadPage(){
+            var r=confirm("Are you sure you want to Reset! It cannot be undone later!");
+            if (r == true) {
+                window.location.href='';
+            } else {
+                
+            }
+        }
+
+    </script>
+    <!--/Script-->
+</body>
+</html>
